@@ -329,19 +329,19 @@ void G01_Command() {
   feed = feed/60.0; //convert to mm/sec, the G-code is in mm/min
   if(xEmpty == 0 || yEmpty == 0 || extEmpty == 0){ //if there are movements in the x/y axis
     dFeed = sqrt(pow(dX,2)+pow(dY,2));
-    tf = dFeed/feed;
+    tf = abs(dFeed/feed);
     Vx = dX*feed/dFeed;
     Vy = dY*feed/dFeed;
-    Vx = abs(Vx*steps_per_rot/(2*3.14159*pulley_radius)); //convert to steps/s by doing mm/s * 800steps/arc length in mm
-    Vy = abs(Vy*steps_per_rot/(2*3.14159*pulley_radius));
+    Vx = Vx*steps_per_rot/(2*3.14159*pulley_radius); //convert to steps/s by doing mm/s * 800steps/arc length in mm
+    Vy = Vy*steps_per_rot/(2*3.14159*pulley_radius);
     
     if(extEmpty == 0){ //if there is movement in the ext axis
       if(dFeed == 0){
-        Vext = abs(feed*steps_per_rot/(2*3.14159*pulley_radius));
+        Vext = feed*steps_per_rot/(2*3.14159*pulley_radius);
       }
       else {
 //        Vext = abs((dFeed/tf)*steps_per_rot/(2*3.14159*pulley_radius));
-        Vext = abs(feed*steps_per_rot/(2*3.14159*pulley_radius));
+        Vext = feed*steps_per_rot/(2*3.14159*pulley_radius);
       }
     }
     
@@ -380,7 +380,7 @@ void runXYExtMotors() {
   if(xEmpty == 0 && yEmpty == 0 && extEmpty == 0){ //x y ext
     while (stepperX.distanceToGo() != 0){ 
       stepperX.runSpeedToPosition(); 
-      stepperY.runSpeedToPosition(); 
+      stepperY.runSpeed(); 
       stepperExt.runSpeed(); 
     }
   }
@@ -402,7 +402,7 @@ void runXYExtMotors() {
   else if(xEmpty == 0 && yEmpty == 0 && extEmpty  == 1){ //x y  
     while (stepperX.distanceToGo() != 0){ 
       stepperX.runSpeedToPosition();
-      stepperY.runSpeedToPosition(); 
+      stepperY.runSpeed(); 
     }
   }
 
